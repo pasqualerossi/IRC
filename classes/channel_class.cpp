@@ -6,27 +6,27 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 16:29:55 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/18 18:40:35 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/19 17:32:50 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-// CHANNEL ACTIONS - erase, broadcastand debug_channel the channel/s.
+// CHANNEL ACTIONS - erase, broadcast and debug the channel/s.
 
-Channel::Channel(String Name) : _name(Name), _topic(), _fdOp(0), _limit(0), _password("") {}
+Channel::Channel(String Name) : _name(Name), _topic(), _file_descriptor_with_zero_permissions(0), _limit(0), _password("") {}
 
 Channel::~Channel(){}
 
 std::vector<Client>		&Channel::get_Clients(){return _clients;}
 String					Channel::get_Name() const {return _name;}
 String					Channel::get_Topic() const {return _topic;}
-int						Channel::get_file_descriptorOp() const {return _fdOp;}
+int						Channel::get_file_descriptor_with_zero_permissions() const {return _file_descriptor_with_zero_permissions;}
 size_t     				Channel::get_Limit() const {return _limit;}
 String					Channel::get_Password() const {return _password;}
 
 void					Channel::set_Topic(String newTopic) {_topic = newTopic;}
-void					Channel::set_file_descriptor_to_zero_permissions(int fd) {_fdOp = fd;}
+void					Channel::set_file_descriptor_to_zero_permissions(int fd) {_file_descriptor_with_zero_permissions = fd;}
 void					Channel::set_Password(String pass) {_password = pass;}
 void					Channel::set_Limit(size_t limit) {_limit = limit;}
 void					Channel::add_Client(Client &cl) {_clients.push_back(cl);}

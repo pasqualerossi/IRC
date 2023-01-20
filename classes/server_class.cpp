@@ -6,23 +6,23 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 16:30:17 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/18 19:11:13 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/19 17:33:27 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-// SERVER ACTIONS - display, add, erase, disconnect, read, handle, launch_Server and find clients within a server.
+// SERVER ACTIONS - display, add, erase, disconnect, read, handle, launch and find clients within a server.
 
 Server::Server(int port, const String &password)
-	: _host("127.0.0.1"), _password(password), _operPassword("operpass"), _port(port) 
+	: _host("127.0.0.1"), _password(password), _operator_password("operpass"), _port(port) 
 	{
-	_sock = create_Socket();
+	_socket = create_socket();
 }
 
 Server::~Server() {}
 
-int		Server::create_Socket()
+int		Server::create_socket()
 {
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0)
@@ -30,7 +30,7 @@ int		Server::create_Socket()
 		throw std::runtime_error("Error while opening socket.");
 	}
 	int val = 1;
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)))
+	if (setsockopt(sockfd, SOL_socketET, SO_REUSEADDR, &val, sizeof(val)))
 	{
 		throw std::runtime_error("Error while setting socket options.");
 	}
@@ -79,7 +79,7 @@ void	Server::adding_the_new_Client()
 	sockaddr_in s_address = {};
 	socklen_t s_size = sizeof(s_address);
 	
-	new_fd = accept(_sock, (sockaddr *) &s_address, &s_size);
+	new_fd = accept(_socket, (sockaddr *) &s_address, &s_size);
 	
 	if (new_fd < 0)
 	{
@@ -166,7 +166,7 @@ void	Server::handle_Message(int fd)
 {
 	try 
 	{
-		this->_cmd = split_Command(read_Message(fd));
+		this->_command = split_Command(read_Message(fd));
 	}
 	catch(const std::exception& e)
 	{
@@ -174,7 +174,7 @@ void	Server::handle_Message(int fd)
 		std::cerr << e.what() << '\n';
 		return ;
 	}
-	for (std::vector<String>::iterator it = this->_cmd.begin(); it != this->_cmd.end(); it++)
+	for (std::vector<String>::iterator it = this->_command.begin(); it != this->_command.end(); it++)
 	{
 		parse_Command(*it, find_Client(fd));
 	}
@@ -247,7 +247,7 @@ void	Server::parse_Command(String str, Client &cl)
 
 void	Server::launch_Server()
 {
-	pollfd fd_server = {_sock, POLLIN, 0};
+	pollfd fd_server = {_socket, POLLIN, 0};
 	_pollfds.push_back(fd_server);
 	std::cout << BWHT << "Server IRC launch_Servered !" << RESET << std::endl;
 	
@@ -264,7 +264,7 @@ void	Server::launch_Server()
 			}
 			if ((_pollfds[i].revents  & POLLIN ) == POLLIN)
 			{
-				if (_pollfds[i].fd == _sock)
+				if (_pollfds[i].fd == _socket)
 				{
 					adding_the_new_Client();
 					display_the_Client();

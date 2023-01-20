@@ -6,18 +6,18 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 16:30:07 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/18 19:29:08 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/19 17:33:11 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-// CLIENT ACTIONS - reply, welcome, message and operator for the client. 
+// CLIENT ACTIONS - reply, welcome, message and get operator for the client. 
 
-Client::Client(int sockfd, std::string hostname) : _sockfd(sockfd), _hostname(hostname), _is_operator(false)
+Client::Client(int sockfd, std::string hostname) : _socketet_fd(sockfd), _hostname(hostname), _is_operator(false)
 {
     _state = HANDSHAKE;
-    _msg = "";
+    _message = "";
 }
 
 Client::~Client() {}
@@ -31,10 +31,10 @@ String  Client::get_Prefix()
 void    Client::reply_to_message(String message) 
 {
     String prefix = _nickname + (_username.empty() ? "" : "!" + _username) + (_hostname.empty() ? "" : "@" + _hostname);
-    String paquet = ":" + prefix + " " + message + "\r\n";
+    String packet = ":" + prefix + " " + message + "\r\n";
     
-	std::cout << "---> " << paquet << std::endl;
-    if (send(_sockfd, paquet.c_str(), paquet.length(), 0) < 0)
+	std::cout << "---> " << packet << std::endl;
+    if (send(_socketet_fd, packet.c_str(), packet.length(), 0) < 0)
 	{
         throw(std::out_of_range("Error while sending"));
 	}
@@ -52,24 +52,24 @@ void    Client::welcome_message()
     std::cout << _nickname << " is registered" << std::endl;
 }
 
-int     Client::get_file_descriptor() const {return _sockfd;}
+int     Client::get_file_descriptor() const {return _socketet_fd;}
 String  Client::get_Nick_name() const {return _nickname;}
 String  Client::get_User_name() const {return _username;}
-String  Client::get_Real_Name() const {return _realname;}
+String  Client::get_Real_Name() const {return _real_name;}
 String  Client::get_Hostname() const {return _hostname;}
-String  Client::get_Message() const {return _msg;}
+String  Client::get_Message() const {return _message;}
 State	Client::get_State() const {return _state;}
-bool	Client::get_operator() const {return _isoper;}
+bool	Client::get_operator() const {return _is_operator;}
 
 void	Client::set_Nickname(String new_Name) {_nickname = new_Name;}
 void	Client::set_Username(String new_Name) {_username = new_Name;}
-void	Client::set_Real_Name(String new_Name) {_realname = new_Name;}
+void	Client::set_Real_Name(String new_Name) {_real_name = new_Name;}
 void	Client::set_Hostname(String new_Name) {_hostname = new_Name;}
-void	Client::set_Message(String new_Message) {_msg = new_Message;}
+void	Client::set_Message(String new_Message) {_message = new_Message;}
 
 void    Client::add_Message(std::string buffer) 
 {
-    _msg += buffer;
+    _message += buffer;
 }
 
 void	Client::set_is_operator(bool is_operator) {_is_operator = is_operator;}
