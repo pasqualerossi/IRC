@@ -1,19 +1,22 @@
 NAME = ircserv
 
-CFLAGS = -Wall -Werror -Wextra -std=c++98
-
 CC = c++
 
-SOURCES = classes/*.cpp \
-		  commands/channel_commands/*.cpp \
-		  commands/server_commands/*.cpp \
-		  program/*.cpp
+FLAGS = -Wall -Wextra -Werror
+
+SOURCES = ./classes/*.cpp \
+		  ./commands/channel_commands/*.cpp \
+		  ./commands/server_commands/*.cpp \
+		  ./program/*.cpp 
+
+$(NAME):
+		$(CC) $(FLAGS) $(SOURCES) -Iheaders -o $(NAME)
 
 all: $(NAME)
 
 clean:
 
-fclean: 
-	rm -rf $(NAME)
+fclean: clean
+	@rm -rf $(NAME)
 
 re: fclean all

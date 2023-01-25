@@ -6,7 +6,7 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 16:30:17 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/19 17:33:27 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:16:17 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void	Server::erase_the_Client(int fd)
 
 	while (it != _clients.end())
 	{
-		if (it->get_file_descriptor() == fd)
+		if (it->getFd() == fd)
 		{
 			_clients.erase(it);
 			return ;
@@ -183,7 +183,7 @@ void	Server::handle_Message(int fd)
 
 std::vector<String>	Server::split_Command(String msg) 
 {
-	std::vector<String> cmd;
+	std::vector<String> command;
 	std::stringstream str(msg);
 	
 	String tmp;
@@ -191,14 +191,14 @@ std::vector<String>	Server::split_Command(String msg)
 	int i = 0;
 	if (msg == "\n")
 	{
-		return cmd;
+		return command;
 	}
 	while (std::getline(str, tmp, '\n')) 
 	{
-		cmd.push_back(tmp);
-		std::cout << cmd.at(i++) << std::endl;
+		command.push_back(tmp);
+		std::cout << command.at(i++) << std::endl;
 	}
-	return cmd;
+	return command;
 }
 
 void	Server::parse_Command(String str, Client &cl) 
@@ -212,7 +212,7 @@ void	Server::parse_Command(String str, Client &cl)
 	args.push_back(tmp);
   	
 	std::cout << "Parse command : [" << tmp << "]" << std::endl;
-	std::string cmds[15] = {"PASS", "NICK", "OPER", "USER", "PRIVMSG", "JOIN", "kill", "PING", "PART", "LIST", "NAMES", "TOPIC", "KICK", "MODE", "NOTICE"};
+	std::string commands[15] = {"PASS", "NICK", "OPER", "USER", "PRIVMSG", "JOIN", "kill", "PING", "PART", "LIST", "NAMES", "TOPIC", "KICK", "MODE", "NOTICE"};
 
 	int		(Server::*ptr[15])(std::vector<String> args, Client &cl) = 
 	{
@@ -235,7 +235,7 @@ void	Server::parse_Command(String str, Client &cl)
 	};
 	for (int i =0; i <= 14; ++i)
 	{
-		if (tmp == cmds[i])
+		if (tmp == commands[i])
 		{
 			while (std::getline(ss, tmp, ' '))
 				args.push_back(tmp);
@@ -284,7 +284,7 @@ Client		&Server::find_Client(int fd)
 {
 	for (unsigned int i = 0; i < _clients.size(); i++)
 	{
-		if (_clients[i].get_file_descriptor() == fd)
+		if (_clients[i].getFd() == fd)
 			return (_clients[i]);
 	}
 	throw(std::out_of_range("Error while searching for user"));
@@ -309,7 +309,7 @@ std::vector<Client>::iterator	Server::find_a_Client(int fd)
 	
 	while (ret != end)
 	{
-		if (ret->get_file_descriptor() == fd)
+		if (ret->getFd() == fd)
 		{
 			return (ret);
 		}
@@ -346,7 +346,7 @@ Channel     &Server::find_Channel(std::string name)
 	throw (std::out_of_range("didnt find channel"));
 }
 
-void    Server::erase_Client_Channel(Client &cl)
+void    Server::erase_Client_Channel(Client &client_side)
 {
 	for (unsigned int i = 0; i < _channels.size(); i++)
 	{

@@ -6,15 +6,15 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 16:30:07 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/19 17:33:11 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-// CLIENT ACTIONS - reply, welcome, message and get operator for the client. 
+// CLIENT ACTIONS - reply_to_message, welcome, message and get operator for the client. 
 
-Client::Client(int sockfd, std::string hostname) : _socketet_fd(sockfd), _hostname(hostname), _is_operator(false)
+Client::Client(int sockfd, std::string hostname) : _socket_fd(sockfd), _hostname(hostname), _is_operator(false)
 {
     _state = HANDSHAKE;
     _message = "";
@@ -28,13 +28,13 @@ String  Client::get_Prefix()
     return prefix;
 }
 
-void    Client::reply_to_message(String message) 
+void    Client::reply_to_message_to_message(String message) 
 {
     String prefix = _nickname + (_username.empty() ? "" : "!" + _username) + (_hostname.empty() ? "" : "@" + _hostname);
     String packet = ":" + prefix + " " + message + "\r\n";
     
 	std::cout << "---> " << packet << std::endl;
-    if (send(_socketet_fd, packet.c_str(), packet.length(), 0) < 0)
+    if (send(_socket_fd, packet.c_str(), packet.length(), 0) < 0)
 	{
         throw(std::out_of_range("Error while sending"));
 	}
@@ -48,11 +48,11 @@ void    Client::welcome_message()
         return ;
     }
     _state = REGISTERED;
-    reply_to_message("001 " + _nickname + " :Welcome " +_nickname +  " into our irc network");
+    reply_to_message_to_message("001 " + _nickname + " :Welcome " +_nickname +  " into our irc network");
     std::cout << _nickname << " is registered" << std::endl;
 }
 
-int     Client::get_file_descriptor() const {return _socketet_fd;}
+int     Client::getFd() const {return _socket_fd;}
 String  Client::get_Nick_name() const {return _nickname;}
 String  Client::get_User_name() const {return _username;}
 String  Client::get_Real_Name() const {return _real_name;}

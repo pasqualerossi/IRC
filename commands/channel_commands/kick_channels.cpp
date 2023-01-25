@@ -6,7 +6,7 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 14:26:30 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 10:48:22 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,33 +22,33 @@ bool     Server::this_Channel(std::string name)
 	return false;
 }
 
-int	Server::kick_Command(std::vector<String> arguments, Client &client) 
+int	Server::kick_Command(std::vector<String> arguments, Client &client_side) 
 {
-	String cmd = arguments.at(0);
+	String command = arguments.at(0);
 
 	if (arguments.size() < 3)
 	{
-		client.reply("461 " + client.get_Nick_name() + " " + cmd + " :Not enough parameters");
+		client_side.reply_to_message("461 " + client_side.get_Nick_name() + " " + command + " :Not enough parameters");
 		return -1;
 	}
 	if (this_Channel(arguments.at(1)) == false)
 	{
-		client.reply("403 " + client.get_Nick_name() + " " + arguments.at(1) + " :No such channel");
+		client_side.reply_to_message("403 " + client_side.get_Nick_name() + " " + arguments.at(1) + " :No such channel");
 		return -1;
 	}
-	if (isClientInChannel(findChannel(arguments.at(1)), client.get_file_descriptor()) == false)
+	if (is_client_in_Channel(find_Channel(arguments.at(1)), client.getFd()) == false)
 	{
-		client.reply("442 " + client.get_Nick_name() + " " + arguments.at(1) + " :You're not on that channel");
+		client_side.reply_to_message("442 " + client_side.get_Nick_name() + " " + arguments.at(1) + " :You're not on that channel");
 		return -1;
 	}
-	if (client.get_file_descriptor() != findChannel(arguments.at(1)).get_file_descriptor_with_zero_permissions())
+	if (client_side.getFd() != find_Channel(arguments.at(1)).getFd_with_zero_permissions())
 	{
-		client.reply(ERR_CHANOPRIVSNEEDED(client, arguments.at(1)));
+		client_side.reply_to_message(error_channel_operator_is_Needed(client_side, arguments.at(1)));
 		return -1;
 	}
-	if (isClientNInChannel(findChannel(arguments.at(1)), carriage_return(arguments.at(2))) == false)
+	if (isClientNInChannel(find_Channel(arguments.at(1)), carriage_return(arguments.at(2))) == false)
 	{
-		client.reply("441 " + client.get_Nick_name() + " " + carriage_return(arguments.at(2)) + " " + arguments.at(1) + " :They aren't on that channel");
+		client_side.reply_to_message("441 " + client_side.get_Nick_name() + " " + carriage_return(arguments.at(2)) + " " + arguments.at(1) + " :They aren't on that channel");
 		return -1;
 	}
 	std::vector<String> temporary;

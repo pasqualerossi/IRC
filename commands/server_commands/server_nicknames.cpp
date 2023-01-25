@@ -6,17 +6,17 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 14:27:13 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 10:39:30 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../irc.hpp"
 
-bool	Server::server_already_used(String name, Client client)
+bool	Server::server_already_used(String name, Client client_side)
 {
-	for (std::vector<Client>::iterator it = this->_clients.begin(); it != this->_clients.end(); ++it)
+	for (std::vector<Client>::iterator it = this->client_side.begin(); it != this->_clients.end(); ++it)
 	{
-		if (it->get_Nick_name() == name && it->get_file_descriptor() != client.get_file_descriptor())
+		if (it->get_Nick_name() == name && it->getFd() != client_side.getFd())
 		{
 			return (true);
 		}
@@ -56,19 +56,19 @@ bool	valid_nickname(String name)
 	return (true);
 }
 
-String	error_no_nickname_given(Client client) 
+String	error_no_nickname_given(Client client_side) 
 {
-	return ("431 " + client.get_Nick_name() + " :No nickname given");
+	return ("431 " + client_side.get_Nick_name() + " :No nickname given");
 }
 
-String	error_wrong_nickname(Client client, String new_nickname) 
+String	error_wrong_nickname(Client client_side, String new_nickname) 
 {
-	return ("432 " + client.get_Nick_name() + " " + new_nickname + " :wrong nickname");
+	return ("432 " + client_side.get_Nick_name() + " " + new_nickname + " :wrong nickname");
 }
 
-String	error_nickname_in_use(Client client, String new_nickname) 
+String	error_nickname_in_use(Client client_side, String new_nickname) 
 {
-	return ("433 " + client.get_Nick_name() + " " + new_nickname + " " + new_nickname + " :Nickname is already in use");
+	return ("433 " + client_side.get_Nick_name() + " " + new_nickname + " " + new_nickname + " :Nickname is already in use");
 }
 
 String	success_nickname(String new_nickname) 
@@ -76,27 +76,27 @@ String	success_nickname(String new_nickname)
 	return (" NICK " + new_nickname);
 }
 
-int Server::nickname_Command(std::vector<String> arguments, Client &client)
+int Server::nickname_Command(std::vector<String> arguments, Client &client_side)
 {
 	String new_nickname = carriage_return(arguments[1]);
 
 	if (arguments.size() < 2)
 	{
-		client.reply(error_no_nickname_given(client));
+		client_side.reply_to_message(error_no_nickname_given(client_side));
 		return (-1);
 	}
 	if (valid_nickname(new_nickname) == false)
 	{
-		client.reply(error_wrong_nickname(client, new_nickname));
+		client_side.reply_to_message(error_wrong_nickname(client_side, new_nickname));
 		return (-1);
 	}
-	if (server_already_used(new_nickname, client) == true)
+	if (server_already_used(new_nickname, client_side) == true)
 	{
-		client.reply(error_nickname_in_use(client, new_nickname));
+		client_side.reply_to_message(error_nickname_in_use(client_side, new_nickname));
 		return (-1);
 	}
-    client.reply(success_nickname(new_nickname));
-	client.set_Nickname(new_nickname);
-	client.welcome_message();
+    client_side.reply_to_message(success_nickname(new_nickname));
+	client_side.set_Nickname(new_nickname);
+	client_side.welcome_message();
 	return 0;
 }

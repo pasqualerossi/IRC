@@ -6,82 +6,88 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 14:26:52 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 10:38:44 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../irc.hpp"
 
-// NEAT UP!
-
-String  RPL_NOTOPIC(Client cl, String channel) {
-	return ("331 " + cl.get_Nick_name() + " " + channel +" :No topic is set");
-}
-
-String  ERR_NOTONCHANNEL(Client cl, String channel) {
-	return ("442 " + cl.get_Nick_name() + " " + channel + " :You're not on that channel");
-}
-
-String      get_TopicStr(std::vector<String> params)
+String  rpl_no_Topic(Client client_side, String channel_side) 
 {
-    String topic;
+	return ("331 " + client_side.get_Nick_name() + " " + channel_side +" :No topic is set");
+}
 
+String  error_not_on_Channel(Client client_side, String channel_side) 
+{
+	return ("442 " + client_side.get_Nick_name() + " " + channel_side + " :You're not on that channel");
+}
+
+String      get_TopicStr(std::vector<String> parameters)
+{
+    String topic = parameters[2];
     unsigned int i = 3;
-    topic = params[2];
     if (topic[0] == ':')
         topic = topic.substr(1);
-    while (i < params.size())
+    while (i < parameters.size())
     {
         topic += " ";
-        topic += params[i];
+        topic += parameters[i];
         i++;
     }
-    topic = carriage_return(topic); //enleve le \r
+    topic = carriage_return(topic);
     return topic;
 }
 
-int		Server::topic_command(std::vector<String> args, Client &cl)
+int		Server::topic_command(std::vector<String> arguments, Client &client_side)
 {
-	if (args.size() < 2)
+	String channel_name = carriage_return(arguments[1]);
+	std::vector<Channel>::iterator channel = find_a_Channel(channel_name);
+
+	if (arguments.size() < 2)
 	{
-		cl.reply(error_need_more_Parameters(cl, "TOPIC"));
+		client_side.reply_to_message(error_need_more_Parameters(client_side, "TOPIC"));
 		return -1;
 	}
-
-	String chan_name = carriage_return(args[1]);
-	if (chan_name.empty())
+	if (channel_name.empty())
 	{
-		cl.reply(error_need_more_Parameters(cl, "TOPIC"));
+		client_side.reply_to_message(error_need_more_Parameters(client_side, "TOPIC"));
 		return (-1);
 	}
-
-	try {
-		std::vector<Channel>::iterator chan = find_a_Channel(chan_name);
-
-		if (isClientInChannel(*chan, cl.get_file_descriptor()))
+	try 
+	{
+		if (is_client_in_Channel(*channel, client_side.getFd()))
 		{
-			if (args.size() == 2)
+			if (arguments.size() == 2)
 			{
-				if (chan->get_Topic().empty())
-					cl.reply(RPL_NOTOPIC(cl, chan_name));
+				if (channel->get_Topic().empty())
+				{
+					client_side.reply_to_message(rpl_no_Topic(client_side, channel_name));
+				}
 				else
-					cl.reply(RPL_TOPIC(cl, chan_name, chan->get_Topic()));
+				{
+					client_side.reply_to_message(rpl_topic_Message(client_side, channel_name, channel->get_Topic()));
+				}
 				return (0);
 			}
-			else if (isOperInChannel(cl, *chan))
+			else if (is_operator_in_Channel(client_side, *channel))
 			{
-				chan->set_Topic(get_TopicStr(args));
-				chan->broadcast_message(RPL_TOPIC(cl, chan_name, chan->get_Topic()));
+				channel->set_Topic(get_TopicStr(args));
+				channel->broadcast_message(rpl_topic_Message(client_side, channel_name, channel->get_Topic()));
 				return (0);
 			}
 			else
-				cl.reply(ERR_CHANOPRIVSNEEDED(cl, chan_name));
+			{
+				client_side.reply_to_message(error_channel_operator_is_Needed(client_side, channel_name));
+			}
 		}
 		else
-			cl.reply(ERR_NOTONCHANNEL(cl, chan_name));
+		{
+			client_side.reply_to_message(error_not_on_Channel(client_side, channel_name));
+		}
 	}
-	catch (const std::exception& e) {
-		cl.reply(ERR_NOSUCHCHANNEL(cl, chan_name));
+	catch (const std::exception& e) 
+	{
+		client_side.reply_to_message(error_no_such_Channel(client_side, channel_name));
 	}
 	return (-1);
 

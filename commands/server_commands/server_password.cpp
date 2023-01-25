@@ -6,21 +6,21 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 14:27:37 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 10:39:20 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../irc.hpp"
 
-String	error_not_matching_Password(Client &client) {
-	return ("464 " + client.get_Nick_name() + " - Password is incorrect");
+String	error_not_matching_Password(Client &client_side) 
+{
+	return ("464 " + client_side.get_Nick_name() + " - Password is incorrect");
 }
 
 int		testing_the_string(String test)
 {
 	const char *testing = test.c_str();
 	int		i = 0;
-
 	while (testing[i])
 	{
 		if (testing[i] == '\r')
@@ -33,13 +33,12 @@ int		testing_the_string(String test)
 	return 0;
 }
 
-int Server::password_Command(std::vector<String> password, Client &client) 
+int Server::password_Command(std::vector<String> password, Client &client_side) 
 {
 	String multiple_passwords = carriage_return(password[1]);
-
 	if (password.size() < 2)
 	{
-		client.reply(error_need_more_Parameters(client, "PASSWORD"));
+		client_side.reply_to_message(error_need_more_Parameters(client_side, "PASSWORD"));
 		return -1;
 	}
 	if (multiple_passwords != _password)
@@ -47,10 +46,10 @@ int Server::password_Command(std::vector<String> password, Client &client)
 		std::cout <<"password[1] - " << "[" << multiple_passwords << "]"<< std::endl;
 		std::cout << "password - " << "[" << _password << "]" << std::endl;
 		testing_the_string(password[1]);
-		client.reply(error_not_matching_Password(client));
+		client_side.reply_to_message(error_not_matching_Password(client_side));
 		return -1;
 	}
-	client.set_State(LOGIN);
-	client.welcome_message();
+	client_side.set_State(LOGIN);
+	client_side.welcome_message();
 	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/05 16:21:23 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 13:39:53 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:08:22 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,12 @@ bool	get_port(char *argc, int &port)
 	port = strtol(argc, &buffer, 10);
 	if (*buffer != '\0')
 	{
-		std::cout << RED << "Error input: port must contain only digits" << RESET << std::endl;
+		std::cout << "Error input: port must contain only digits" << std::endl;
 		return (false);
 	}
 	if (port < 0 || port > 65535)
 	{
-		std::cout << RED << "Error input: port is out of range [0; 65535]" << RESET << std::endl;
+		std::cout << "Error input: port is out of range [0; 65535]" << std::endl;
 		return (false);
 	}
 	return (true);
@@ -50,7 +50,7 @@ int	main(int argc, char **argv)
 	signal(SIGINT, signal_Handler);
 	if (argc != 3)
 	{
-		std::cout << BWHT << "Usage: ./ircserv <port> <password>" << RESET << std::endl;
+		std::cout << "Usage: ./ircserv <port> <password>" << std::endl;
 		return (1);
 	}
 	if (get_port(argv[1], port) == false)

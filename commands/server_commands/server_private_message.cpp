@@ -6,15 +6,15 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 14:27:57 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 10:39:29 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../irc.hpp"
 
-String rpl_private_message(Client client, String recipient, String message)
+String rpl_private_message(Client client_side, String recipient, String message)
 {
-    return (":" + client.get_Nick_name() + " Private Message " + recipient + " :" + message);
+    return (":" + client_side.get_Nick_name() + " Private Message " + recipient + " :" + message);
 }
 
 String      get_Message(std::vector<String> parameters)
@@ -34,50 +34,50 @@ String      get_Message(std::vector<String> parameters)
     return message;
 }
 
-int Server::change_Message(std::vector<String> parameters, Client &client)
+int Server::change_Message(std::vector<String> parameters, Client &client_side)
 {
     if (parameters.size() < 3)
     {
-        client.reply("need more params");
+        client_side.reply_to_message("need more parameters");
         return -1;
     }
     String  message = get_Message(parameters);
     try
     {
         std::vector<Channel>::iterator channel = find_a_Channel(parameters[1]);
-        if (isClientInChannel(*channel, client.get_file_descriptor()))
+        if (is_client_in_Channel(*channel, client_side.getFd()))
 		{
-            channel->broadcast_message(rpl_private_message(client, parameters[1], message), client);
+            channel->broadcast_message(rpl_private_message(client_side, parameters[1], message), client_side);
 		}
         else
 		{
-            client.reply("404 " + client.get_Nick_name() + " your not in the channel " + channel->get_Name());
+            client_side.reply_to_message("404 " + client_side.get_Nick_name() + " your not in the channel " + channel->get_Name());
 		}
     }
     catch(const std::exception& e)
     {
-       cl.reply(e.what());
+       client_side.reply_to_message(e.what());
     }
     return 0;
 }
 
-int Server::private_message_Command(std::vector<String> parameters, Client &client)
+int Server::private_message_Command(std::vector<String> parameters, Client &client_side)
 {
     std::cout << "ENTER IN PRIVATE MESSAGE" << std::endl;
 
-    if (client.get_State() != REGISTERED)
+    if (client_side.get_State() != REGISTERED)
     {
-        client.reply("you need to register first");
+        client_side.reply_to_message("you need to register first");
         return -1;
     }
     if (parameters.size() < 3)
 	{
-        client.reply("461 " + client.get_Nick_name() + " " + "Private Message" + " - Not enough parameters");
+        client_side.reply_to_message("461 " + client_side.get_Nick_name() + " " + "Private Message" + " - Not enough parameters");
 		return -1;
 	}
     if (parameters[1].at(0) == '#')
 	{
-        return (change_Message(parameters, client));
+        return (change_Message(parameters, client_side));
 	}
     try
     {
@@ -85,10 +85,10 @@ int Server::private_message_Command(std::vector<String> parameters, Client &clie
         String  message = get_Message(parameters);
         std::cout << "message = " << "[" << message << "]" << std::endl;
         String packet = rpl_private_message(cl, recipient.get_Nick_name(), message);
-        std::cout << packet << recipient.get_file_descriptor() << std::endl;
+        std::cout << packet << recipient.getFd() << std::endl;
         packet += "\r\n";
         
-		if (send(recipient.get_file_descriptor(), packet.c_str(), packet.length(), 0) < 0)
+		if (send(recipient.getFd(), packet.c_str(), packet.length(), 0) < 0)
 		{
             throw std::out_of_range("error while sending in private message");
 		}

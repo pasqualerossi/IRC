@@ -6,15 +6,13 @@
 /*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/18 14:26:07 by prossi            #+#    #+#             */
-/*   Updated: 2023/01/20 18:32:09 by prossi           ###   ########.fr       */
+/*   Updated: 2023/01/23 21:35:31 by prossi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../irc.hpp"
 
-// NEAT UP!
-
-int	give_zero_permissions(Client &client, std::vector<String> arguments, Channel &channel) 
+int	give_zero_permissions(Client &client_side, std::vector<String> arguments, Channel &channel_side) 
 {
 	int check = 0;
 	size_t i = 0;
@@ -22,12 +20,12 @@ int	give_zero_permissions(Client &client, std::vector<String> arguments, Channel
 	std::cout << "HEEEEEEEEEERE" << std::endl;
 	if (arguments.size() < 4) 
 	{
-		client.reply(error_need_more_Parameters(client, "MODE"));
+		client_side.reply_to_message(error_need_more_Parameters(client_side, "MODE"));
 		return -1;
 	}
-	for (; i < channel.get_Clients().size(); i++)
+	for (; i < channel_side.get_Clients().size(); i++)
 	{
-		if (channel.get_Clients().at(i).get_Nick_name() == carriage_return(arguments.at(3)))
+		if (channel_side.get_Clients().at(i).get_Nick_name() == carriage_return(arguments.at(3)))
 		{
 			std::cout << "I'm here" << std::endl;
 			check = 1;
@@ -35,32 +33,32 @@ int	give_zero_permissions(Client &client, std::vector<String> arguments, Channel
 		}
 	}
 	if (check == 1)
-		channel.set_file_descriptor_to_zero_permissions(channel.get_Clients().at(i).get_file_descriptor());
+		channel_side.set_file_descriptor_to_zero_permissions(channel_side.get_Clients().at(i).getFd());
 	else
-		client.reply("401 " + client.get_Nick_name() + " " + carriage_return(arguments.at(3)) + " :No such nickname or channel");
+		client_side.reply_to_message("401 " + client_side.get_Nick_name() + " " + carriage_return(arguments.at(3)) + " :No such nickname or channel");
 	return 0;
 }
 
 
-int set_Password(String password, Channel &channel) 
+int set_Password(String password, Channel &channel_side) 
 {
 	if (password.empty())
 	{
 		return -1;
 	}
-	channel.set_Password(password);
+	channel_side.set_Password(password);
 	return 0;
 }
 
-int remove_Password(String password, Channel &channel) 
+int remove_Password(String password, Channel &channel_side) 
 {
 	if (password.empty())
 	{
 		return -1;
 	}
-	if (channel.get_Password() == password)
+	if (channel_side.get_Password() == password)
 	{
-		channel.set_Password("");
+		channel_side.set_Password("");
 	}
 	else
 	{
@@ -87,25 +85,25 @@ size_t	parse_Limit(std::string arguments)
 	return (limit);
 }
 
-int	set_Limit(size_t limit, Channel &channel)
+int	set_Limit(size_t limit, Channel &channel_side)
 {
-	if (limit < channel.get_Clients().size() && limit != 0)
+	if (limit < channel_side.get_Clients().size() && limit != 0)
 	{
 		std::cout << "to many people on this channel to set this limit" << std::endl;
 		return -1;
 	}
-	channel.set_Limit(limit);
+	channel_side.set_Limit(limit);
 	return 0;
 }
 
-int	check_flag(std::vector<String> arguments, Client &client, Channel &channel) 
+int	check_flag(std::vector<String> arguments, Client &client_side, Channel &channel_side) 
 {
 	int i = 0;
 	std::string flags[7] = {"+O","+o","-o","+l","-l","+k","-k"};
 
 	if (arguments.size() < 3)	
 	{
-		client.reply(error_need_more_Parameters(client, "MODE"));
+		client_side.reply_to_message(error_need_more_Parameters(client_side, "MODE"));
 		return -1;
 	}
 	String flag = carriage_return(arguments[2]);
@@ -117,43 +115,43 @@ int	check_flag(std::vector<String> arguments, Client &client, Channel &channel)
 	switch (i) 
 	{
 		case 0:
-			return (give_zero_permissions(client, arguments, channel));
+			return (give_zero_permissions(client_side, arguments, channel_side));
 		case 1:
-			return (give_zero_permissions(client, arguments, channel));
+			return (give_zero_permissions(client_side, arguments, channel_side));
 		case 2:
-			client.reply("482 " + client.get_Nick_name() + " " + channel.get_Name() + " :We need an operator");
+			client_side.reply_to_message("482 " + client_side.get_Nick_name() + " " + channel_side.get_Name() + " :We need an operator");
 			return -1;
 		case 3:
 			if (arguments.size() < 4) 
 			{
-				client.reply(error_need_more_Parameters(client, "MODE"));
+				client_side.reply_to_message(error_need_more_Parameters(client_side, "MODE"));
 				return -1;
 			}
-			return (set_Limit(parse_Limit(arguments[3]), channel));
+			return (set_Limit(parse_Limit(arguments[3]), channel_side));
 		case 4:
-			return (set_Limit(0, channel));
+			return (set_Limit(0, channel_side));
 		case 5:
 			if (arguments.size() < 4) 
 			{
-				client.reply(error_need_more_Parameters(client, "MODE"));
+				client_side.reply_to_message(error_need_more_Parameters(client_side, "MODE"));
 				return -1;
 			}
-			return (set_Password(carriage_return(arguments[3]), channel));
+			return (set_Password(carriage_return(arguments[3]), channel_side));
 		case 6:
 			if (arguments.size() < 4) 
 			{
-				client.reply(error_need_more_Parameters(client, "MODE"));
+				client_side.reply_to_message(error_need_more_Parameters(client_side, "MODE"));
 				return -1;
 			}
-			return (remove_Password(carriage_return(arguments[3]), channel));
+			return (remove_Password(carriage_return(arguments[3]), channel_side));
 		default:
-			client.reply("501 " + client.get_Nick_name() + " :Unknown MODE flag");
+			client_side.reply_to_message("501 " + client_side.get_Nick_name() + " :Unknown MODE flag");
 			return -1;
 	}
 	return 0;
 }
 
-int Server::mode_Command(std::vector<String> arguments, Client &client) 
+int Server::mode_Command(std::vector<String> arguments, Client &client_side) 
 {
 	std::cout << "in MODE->args = " << std::endl;
 	for (unsigned int i = 0; i < arguments.size(); i++)
@@ -162,7 +160,7 @@ int Server::mode_Command(std::vector<String> arguments, Client &client)
 
 	if (arguments.size() < 2)
 	{
-		client.reply(error_need_more_Parameters(client, "MODE"));
+		client_side.reply_to_message(error_need_more_Parameters(client_side, "MODE"));
 		return -1;
 	}
 	if (this_Channel(arguments.at(1)) == false)
@@ -171,14 +169,14 @@ int Server::mode_Command(std::vector<String> arguments, Client &client)
 		{
 			return -1;
 		}
-		client.reply(ERR_NOSUCHCHANNEL(client, carriage_return(arguments[1])));
+		client_side.reply_to_message(error_no_such_Channel(client_side, carriage_return(arguments[1])));
 		return -1;
 	}
-	if (client.get_file_descriptor() != findChannel(arguments.at(1)).get_file_descriptor_with_zero_permissions())
+	if (client_side.getFd() != find_Channel(arguments.at(1)).getFd_with_zero_permissions())
 	{
-		client.reply(ERR_CHANOPRIVSNEEDED(client, arguments.at(1)));
+		client_side.reply_to_message(error_channel_operator_is_Needed(client_side, arguments.at(1)));
 		return -1;
 	}
-	check_flag(arguments, client, findChannel(arguments.at(1)));
+	check_flag(arguments, client_side, find_Channel(arguments.at(1)));
 	return 1;
 }
