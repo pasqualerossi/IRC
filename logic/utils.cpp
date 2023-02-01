@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:42:05 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "irc.hpp"
 
 String	erasebr(String str) 
@@ -9,17 +21,17 @@ String	erasebr(String str)
 	return str;
 }
 
-String	ERR_NEEDMOREPARAMS(Client &client, String cmd) 
+String	ERROR_NEED_MORE_PARAMETERS(Client &client, String cmd) 
 {
 	return ("461 " + client.getNickname() + " " + cmd + " :Not enough parameters");
 }
 
-String  ERR_NOSUCHCHANNEL(Client cl, String channel) 
+String  ERROR_NO_SUCH_CHANNEL_EXISTS(Client cl, String channel) 
 {
 	return ("403 " + cl.getNickname() + " " + channel +" :No such channel");
 }
 
-String  ERR_CHANOPRIVSNEEDED(Client cl, String channel) 
+String  ERROR_CHANNEL_OPERATOR_NEEDED(Client cl, String channel) 
 {
 	return ("482 " + cl.getNickname() + " " + channel + " :You're not channel operator");
 }
@@ -39,7 +51,7 @@ bool	isClientInChannel(Channel &chan, int fd)
 	return false;
 }
 
-bool	isClientNInChannel(Channel &chan, String name)
+bool	is_client_not_in_Channel(Channel &chan, String name)
 {
 	for (unsigned int i = 0; i < chan.getClients().size(); i++)
 	{
@@ -49,7 +61,7 @@ bool	isClientNInChannel(Channel &chan, String name)
 	return false;
 }
 
-bool	isOperInChannel(Client cl, Channel chan)
+bool	is_operator_in_Channel(Client cl, Channel chan)
 {
 	if (chan.getFdOp() == cl.getFd())
 		return true;

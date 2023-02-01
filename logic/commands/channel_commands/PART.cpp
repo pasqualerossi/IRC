@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PART.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:38:26 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../irc.hpp"
 
 int         Server::cmdPart(std::vector<String> params, Client &cl)
@@ -8,7 +20,7 @@ int         Server::cmdPart(std::vector<String> params, Client &cl)
     }
     if (params.size() < 2)
     {
-        cl.reply(ERR_NEEDMOREPARAMS(cl, "PART"));
+        cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "PART"));
         return -1;
     }
     try

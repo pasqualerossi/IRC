@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:37:53 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../irc.hpp"
 
 Client::Client(int sockfd, std::string hostname) : _sockfd(sockfd), _hostname(hostname), _isoper(false)

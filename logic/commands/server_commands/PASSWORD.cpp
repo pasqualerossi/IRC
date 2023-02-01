@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PASSWORD.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:38:56 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../irc.hpp"
 
 String	ERR_PASSWDMISMATCH(Client &client) 
@@ -25,7 +37,7 @@ int Server::cmdPass(std::vector<String> pass, Client &cl)
 {
 	if (pass.size() < 2)
 	{
-		cl.reply(ERR_NEEDMOREPARAMS(cl, "PASS"));
+		cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "PASS"));
 		return -1;
 	}
 	String mdp = erasebr(pass[1]);

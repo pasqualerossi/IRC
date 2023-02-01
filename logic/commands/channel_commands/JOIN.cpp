@@ -1,5 +1,16 @@
-#include "../../irc.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   JOIN.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:38:08 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "../../irc.hpp"
 
 std::string     RPL_NAMREPLY(Client &cl, std::string chan_name, std::string users)
 {
@@ -47,7 +58,7 @@ int         Server::cmdJoin(std::vector<String> params, Client &cl)
     }
     if (params.size() < 2)
     {
-        cl.reply(ERR_NEEDMOREPARAMS(cl, "JOIN"));
+        cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "JOIN"));
         return -1;
     }
     String name = erasebr(params[1]);

@@ -1,12 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   irc.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:37:16 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef IRC_HPP
 # define IRC_HPP
+
+// Libraries
 
 # include <iostream>
 # include <vector>
 # include <sstream>
 # include <sys/socket.h>
 # include <algorithm>
-# include <sys/poll.h>
 # include <sys/types.h>
 # include <arpa/inet.h>
 # include <netdb.h>
@@ -21,9 +34,15 @@
 # include <cerrno>
 # include <signal.h>
 
-// Client Class
+// Extern Bool
+
+extern bool g_interrupt;
+
+// Typedef
 
 typedef std::string String;
+
+// enum
 
 enum State
 {
@@ -31,6 +50,11 @@ enum State
 	LOGIN,
 	REGISTERED
 };
+
+/* Classes - Client, Channel and Server */
+
+
+// Client Class
 
 class Channel;
 
@@ -82,10 +106,6 @@ class Client
 
 // Channel Class
 
-typedef std::string String;
-
-class Client;
-
 class Channel 
 {
 	private:
@@ -127,13 +147,6 @@ class Channel
 
 // Server Class
 
-typedef std::string String;
-
-extern bool g_interrupt;
-
-class Client;
-class Channel;
-
 class Server 
 {
 	private:
@@ -152,17 +165,17 @@ class Server
 		Server(int port, const String &password);
 		~Server();
 
-	// Server init
+	// Server Init
 
 		int									createSocket();
 		void								launch();
 
-	// Server display
+	// Server Display
 
 		void								handleMessage(int fd);
 		void								displayClient();
 
-	// Server receipt 
+	// Server Receipt 
 
 		std::vector<String>					splitCmd(String msg);
 		void								parseCmd(String str, Client &cl);
@@ -175,7 +188,7 @@ class Server
 		void								eraseClientChannel(Client &cl);
 		void								clientDisconnect(int fd);
 
-	// Server utils
+	// Server Utils
 
 		int									chanMessage(std::vector<String> params, Client &cl);
 		int									chanNotice(std::vector<String> params, Client &cl);
@@ -212,14 +225,14 @@ class Server
 // Utils.cpp
 
 	String								erasebr(String str);
-	String								ERR_NEEDMOREPARAMS(Client &client, String cmd);
-	String								ERR_NOSUCHCHANNEL(Client cl, String channel);
-	String								ERR_CHANOPRIVSNEEDED(Client cl, String channel);
+	String								ERROR_NEED_MORE_PARAMETERS(Client &client, String cmd);
+	String								ERROR_NO_SUCH_CHANNEL_EXISTS(Client cl, String channel);
+	String								ERROR_CHANNEL_OPERATOR_NEEDED(Client cl, String channel);
 	String								RPL_TOPIC(Client cl, String channel, String topic);
 	
 	bool								isClientInChannel(Channel &chan, int fd);
-	bool								isClientNInChannel(Channel &chan, String name);
-	bool								isOperInChannel(Client cl, Channel chan);
+	bool								is_client_not_in_Channel(Channel &chan, String name);
+	bool								is_operator_in_Channel(Client cl, Channel chan);
 
 	std::vector<String> 				split(String str, const char *delim);
 

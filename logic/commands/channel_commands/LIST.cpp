@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   LIST.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:40:51 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../irc.hpp"
 
 int Server::cmdList(std::vector<String> args, Client &cl) 
@@ -6,8 +18,7 @@ int Server::cmdList(std::vector<String> args, Client &cl)
     {
         if (_channels.size() == 0)
         {
-
-            cl.reply(":NO SUCHCHANNEL"); // je reply 403???
+            cl.reply(":NO SUCHCHANNEL");
             return -1;
         }
         for (size_t i = 0; i < _channels.size(); i++)
@@ -37,7 +48,6 @@ int Server::cmdList(std::vector<String> args, Client &cl)
                     cl.reply("322 " + cl.getNickname() + " " + _channels.at(j).getName() + " " + size + " :" + _channels.at(j).getTopic());
 					check = 1;
 					break ;
-
                 }
             }
             if (check == 0)

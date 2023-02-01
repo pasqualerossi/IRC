@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   MODE.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:42:04 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../irc.hpp"
 
 int	giveOprivilege(Client &cl, std::vector<String> args, Channel &chan) 
@@ -6,7 +18,7 @@ int	giveOprivilege(Client &cl, std::vector<String> args, Channel &chan)
 	size_t i = 0;
 	std::cout << "HEEEEEEEEEERE" << std::endl;
 	if (args.size() < 4) {
-		cl.reply(ERR_NEEDMOREPARAMS(cl, "MODE"));
+		cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "MODE"));
 		return -1;
 	}
 	for (; i < chan.getClients().size(); i++)
@@ -79,7 +91,7 @@ int	check_flag(std::vector<String> args, Client &cl, Channel &chan)
 	std::string flags[7] = {"+O","+o","-o","+l","-l","+k","-k"};
 
 	if (args.size() < 3)	{
-		cl.reply(ERR_NEEDMOREPARAMS(cl, "MODE"));
+		cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "MODE"));
 		return -1;
 	}
 	String flag = erasebr(args[2]);
@@ -96,7 +108,7 @@ int	check_flag(std::vector<String> args, Client &cl, Channel &chan)
 			return -1;
 		case 3:
 			if (args.size() < 4) {
-				cl.reply(ERR_NEEDMOREPARAMS(cl, "MODE"));
+				cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "MODE"));
 				return -1;
 			}
 			return (setLimit(parseLimit(args[3]), chan));
@@ -104,13 +116,13 @@ int	check_flag(std::vector<String> args, Client &cl, Channel &chan)
 			return (setLimit(0, chan));
 		case 5:
 			if (args.size() < 4) {
-				cl.reply(ERR_NEEDMOREPARAMS(cl, "MODE"));
+				cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "MODE"));
 				return -1;
 			}
 			return (setPassword(erasebr(args[3]), chan));
 		case 6:
 			if (args.size() < 4) {
-				cl.reply(ERR_NEEDMOREPARAMS(cl, "MODE"));
+				cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "MODE"));
 				return -1;
 			}
 			return (removePassword(erasebr(args[3]), chan));
@@ -131,19 +143,19 @@ int Server::cmdMode(std::vector<String> args, Client &cl)
 
 	if (args.size() < 2)
 	{
-		cl.reply(ERR_NEEDMOREPARAMS(cl, "MODE"));
+		cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "MODE"));
 		return -1;
 	}
 	if (isChannel(args.at(1)) == false)
 	{
 		if (erasebr(args[1]).at(0) != '#')
 			return -1;
-		cl.reply(ERR_NOSUCHCHANNEL(cl, erasebr(args[1])));
+		cl.reply(ERROR_NO_SUCH_CHANNEL_EXISTS(cl, erasebr(args[1])));
 		return -1;
 	}
 	if (cl.getFd() != findChannel(args.at(1)).getFdOp())
 	{
-		cl.reply(ERR_CHANOPRIVSNEEDED(cl, args.at(1)));
+		cl.reply(ERROR_CHANNEL_OPERATOR_NEEDED(cl, args.at(1)));
 		return -1;
 	}
 	check_flag(args, cl, findChannel(args.at(1)));

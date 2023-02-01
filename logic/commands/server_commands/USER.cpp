@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   USER.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <prossi@student.42adel.org.au>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:42:03 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../irc.hpp"
 
 int Server::cmdUser(std::vector<String> args, Client &cl) 
@@ -6,7 +18,7 @@ int Server::cmdUser(std::vector<String> args, Client &cl)
 	String cmd = args.at(0);
 	if (args.size() < 5)
 	{
-		cl.reply(ERR_NEEDMOREPARAMS(cl, "USER"));
+		cl.reply(ERROR_NEED_MORE_PARAMETERS(cl, "USER"));
 		return -1;
 	}
 	else if (cl.getUsername() == args.at(1))

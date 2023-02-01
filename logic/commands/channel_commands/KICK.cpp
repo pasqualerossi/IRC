@@ -10,6 +10,18 @@ bool     Server::isChannel(std::string name)
 	return false;
 }
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   irc.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prossi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/01 12:37:14 by prossi            #+#    #+#             */
+/*   Updated: 2023/02/01 12:37:16 by prossi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 int	Server::cmdKick(std::vector<String> args, Client &cl) 
 {
 	String cmd = args.at(0);
@@ -30,10 +42,10 @@ int	Server::cmdKick(std::vector<String> args, Client &cl)
 	}
 	if (cl.getFd() != findChannel(args.at(1)).getFdOp())
 	{
-		cl.reply(ERR_CHANOPRIVSNEEDED(cl, args.at(1)));
+		cl.reply(ERROR_CHANNEL_OPERATOR_NEEDED(cl, args.at(1)));
 		return -1;
 	}
-	if (isClientNInChannel(findChannel(args.at(1)), erasebr(args.at(2))) == false)
+	if (is_client_not_in_Channel(findChannel(args.at(1)), erasebr(args.at(2))) == false)
 	{
 		cl.reply("441 " + cl.getNickname() + " " + erasebr(args.at(2)) + " " + args.at(1) + " :They aren't on that channel");
 		return -1;
